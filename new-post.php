@@ -4,25 +4,15 @@ $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'):
 
-/*        Здесь должен быть код по сохранению.
-
-        Обрати внимание, что сначала обрабатывается POST, а затем идёт секция рендеринга страницы.
-        Это нужно для того, чтобы:
-          - Если при проверке данных ты обнарущишь ошибки - ты мог срендерить форму с сообщением.
-          - Если потребуется, сделать редирект, не придётся отправлять мусор клиенту.*/
-
-    $host = '127.0.0.1';  // Хост, у нас все локально
-    $user = 'root';    // Имя созданного вами пользователя
-    $pass = ''; // Установленный вами пароль пользователю
-    $db_name = 'form';   // Имя базы данных
-    $link = @mysqli_connect($host, $user, $pass, $db_name);
-
-
+    require('conect_sql.php');
 
 
      $date= date("Y-m-d");
     if (isset($_POST["e-mail"]) && isset($_POST["topic"]) && isset($_POST["message"]) && $link) {
-    $sql = mysqli_query($link, "INSERT INTO `message-list1` (`user`, `topic`, `message`, `e-mail`, `date`) VALUES ('{$_POST["user"]}', '{$_POST["topic"]}', '{$_POST["message"]}', '{$_POST["e-mail"]}', '{$date}')");
+    $sql = mysqli_prepare($link, "INSERT INTO `message_list` (`user`, `topic`, `message`, `email`, `date`) VALUES (?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($sql, 'sssss',  $_POST["user"], $_POST["topic"], $_POST["message"], $_POST["email"], $date);
+        mysqli_stmt_execute($sql);
+        mysqli_stmt_close($sql);
        header('Location: /post.php');
 
     }
@@ -65,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
         </div>
         <label for="e-mail_theme">Электронная почта:</label>
         <div class="form_validate">
-            <input type='email' name="e-mail" id='e-mail_theme'  placeholder="E-Mail"  />
+            <input type='email' name="email" id='e-mail_theme'  placeholder="E-Mail"  />
         </div>
 
         <label for='form_message'>Текст сообщения: </label>
