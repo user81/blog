@@ -30,7 +30,7 @@ $comments = mysqli_num_rows($display_comments);
 </head>
 
 <body>
-<table>$comments
+<table>
     <tr>
         <th>Заголовок</th>
         <th>Пользователь</th>
