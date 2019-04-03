@@ -66,7 +66,7 @@ $comments = mysqli_num_rows($display_comments);
 <table>
     <tr>
         <th>Дата</th>
-        <th>email</th>
+        <th>Email</th>
         <th>Сообщение</th>
     </tr>
     <?php for ($i = $comments; $i != 0; --$i):
