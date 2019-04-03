@@ -1,6 +1,7 @@
 <?php
 require('conect_sql.php');
-sql_connection();
+$conect = new mysql_connection;
+$conect->sql_connection();
 $date = date("Y-m-d");
 $hour = 3600;
 $time = $hour + time();
@@ -16,7 +17,7 @@ $topic = mysqli_query($link, "SELECT `topic`, `user`, `date`, `message`,`views`,
 if (isset($_POST["topic_message"]) && isset($_POST["topic_email"])) {
     $comments_stmt = mysqli_prepare($link, "INSERT INTO `comments` (`email_comments`, `message_comments`, `topics_id`, `date_comments` ) VALUES (?, ?, ?, ?)");
     mysqli_stmt_bind_param($comments_stmt, 'ssis', $_POST["topic_email"], $_POST["topic_message"], $_GET["id"], $date);
-    stmt_execute_close($comments_stmt);
+    $conect-> stmt_execute_close($comments_stmt);
     header("Location: /topic.php?id={$_GET['id']}");
     /* header('Location: /topic.php?id=' . $_GET['id']);*/
 }

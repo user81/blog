@@ -2,6 +2,7 @@
 require('conect_sql.php');
 $success = false;
 $errors = [];
+$conect = new mysql_connection;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'):
 
@@ -10,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
     if (isset($_POST["email"]) && isset($_POST["topic"]) && isset($_POST["message"])) {
         $sql = mysqli_prepare($link, "INSERT INTO `topics` (`user`, `topic`, `message`, `email`, `date`) VALUES (?, ?, ?, ?, ?)");
         mysqli_stmt_bind_param($sql, 'sssss', $_POST["user"], $_POST["topic"], $_POST["message"], $_POST["email"], $date);
-        stmt_execute_close($sql);
+        $conect -> stmt_execute_close($sql);
         $to = $_POST["email"];
         $subject = $_POST["topic"];
         $message = $_POST["message"];
@@ -20,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
         mail($to, $subject, $message, $headers);
         header('Location: /post.php');
     }
-    if ($sql && $link) {
+    if ($sql) {
         $success = true;
     } else {
         $errors = 'ошибка';
