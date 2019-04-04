@@ -2,7 +2,7 @@
 require('conect_sql.php');
 $conect = new mysql_connection;
 $conect->sql_connection();
-mysqli_query($link, "UPDATE `topics` SET `id`, `date`, `user`, `topic` ");
+
 $post = mysqli_query($link, "SELECT `id`, `date`, `user`, `topic`   FROM `topics` ORDER BY `id` DESC");
 $rows = mysqli_num_rows($post);
 ?>

@@ -1,5 +1,6 @@
 <?php
 require('conect_sql.php');
+require('email.php');
 $success = false;
 $errors = [];
 $conect = new mysql_connection;
@@ -12,13 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
         $sql = mysqli_prepare($link, "INSERT INTO `topics` (`user`, `topic`, `message`, `email`, `date`) VALUES (?, ?, ?, ?, ?)");
         mysqli_stmt_bind_param($sql, 'sssss', $_POST["user"], $_POST["topic"], $_POST["message"], $_POST["email"], $date);
         $conect -> stmt_execute_close($sql);
-        $to = $_POST["email"];
-        $subject = $_POST["topic"];
-        $message = $_POST["message"];
-        $headers = "Content-type: text/php; charset=UTF-8" . "\r\n";
-        $headers .= "From: <from@blog.com>" . "\r\n";
-        $headers .= "Reply-To: from@blog.com" . "\r\n";
-        mail($to, $subject, $message, $headers);
+        send_mail( $_POST["email"],$_POST["topic"],$_POST["message"]);
         header('Location: /post.php');
     }
     if ($sql) {
@@ -36,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'):
     <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-<form method='POST' location.href='new-post.php' class='form'>
+<form method='POST'  class='form'>
     <h1>Добавить сообщение</h1>
     <?php if ($success): ?>
         <div class="success">Сообщение успешно отправлено!</div>

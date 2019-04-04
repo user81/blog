@@ -8,10 +8,16 @@ $time = $hour + time();
 if (!isset($_COOKIE["hash"])) {
     $hash = "visit";
     setcookie("hash", $hash, $time, "topic.php");
-    mysqli_query($link, "UPDATE `topics` SET `uviews`=`uviews`+1 WHERE `id` = '{$_GET["id"]}'");
+   /* mysqli_query($link, "UPDATE `topics` SET `uviews`=`uviews`+1 WHERE `id` = '{$_GET["id"]}'");*/
+    $uviews_stmt = mysqli_prepare($link, "UPDATE `topics` SET `uviews`=`uviews`+1 WHERE `id` =?");
+    mysqli_stmt_bind_param($uviews_stmt, 'i',  $_GET["id"]);
+    $conect-> stmt_execute_close($uviews_stmt);
 }
 if (isset($_GET["redirect"]) || !isset($_POST["topic_message"]) && !isset($_POST["topic_email"])) {
-    mysqli_query($link, "UPDATE `topics` SET `views`=`views`+1 WHERE `id` = '{$_GET["id"]}'");
+  /*  mysqli_query($link, "UPDATE `topics` SET `views`=`views`+1 WHERE `id` = '{$_GET["id"]}'");*/
+    $views_stmt = mysqli_prepare($link, "UPDATE `topics` SET `uviews`=`uviews`+1 WHERE `id` =?");
+    mysqli_stmt_bind_param($views_stmt, 'i',  $_GET["id"]);
+    $conect-> stmt_execute_close($views_stmt);
 }
 $topic = mysqli_query($link, "SELECT `topic`, `user`, `date`, `message`,`views`,`uviews` FROM `topics` WHERE `id` = '{$_GET["id"]}'");
 if (isset($_POST["topic_message"]) && isset($_POST["topic_email"])) {
@@ -48,7 +54,7 @@ $comments = mysqli_num_rows($display_comments);
     </tr>
 </table>
 
-<form method='POST' location.href='topic.php' class='form'>
+<form method='POST' class='form'>
 
     <label for="e-mail_topic">Электронная почта:</label>
     <div class="form_validate">
