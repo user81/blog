@@ -6,17 +6,13 @@ $errors = [];
 $conect = new mysql_connection;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'):
-
-
     $date = date("Y-m-d");
     if (isset($_POST["email"]) && isset($_POST["topic"]) && isset($_POST["message"])) {
-        $sql = mysqli_prepare($link, "INSERT INTO `topics` (`user`, `topic`, `message`, `email`, `date`) VALUES (?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($sql, 'sssss', $_POST["user"], $_POST["topic"], $_POST["message"], $_POST["email"], $date);
-        $conect -> stmt_execute_close($sql);
+       new_post($_POST["user"], $_POST["topic"], $_POST["message"], $_POST["email"], $date);
         send_mail( $_POST["email"],$_POST["topic"],$_POST["message"]);
         header('Location: /post.php');
     }
-    if ($sql) {
+    if ($link) {
         $success = true;
     } else {
         $errors = 'ошибка';
