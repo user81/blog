@@ -1,96 +1,90 @@
 <?php
-$host = '127.0.0.1'; // Хост, у нас все локально
-$user = 'root'; // Имя созданного вами пользователя
-$pass = ''; // Установленный вами пароль пользователю
-$db_name = 'form'; // Имя базы данных
-$link = mysqli_connect($host, $user, $pass, $db_name);
-
-if (mysqli_connect_errno()) {
-    printf("Соединение не установлено: %s\n", mysqli_connect_error());
-    exit();
+require('conect_sql.php');
+$conect = new mysql_connection;
+$conect->sql_connection();
+$date = date("Y-m-d");
+$hour = 3600;
+$time = $hour + time();
+if (!isset($_COOKIE["hash"])) {
+    $hash = "visit";
+    setcookie("hash", $hash, $time, "topic.php");
+   /* mysqli_query($link, "UPDATE `topics` SET `uviews`=`uviews`+1 WHERE `id` = '{$_GET["id"]}'");*/
+    $uviews_stmt = mysqli_prepare($link, "UPDATE `topics` SET `uviews`=`uviews`+1 WHERE `id` =?");
+    mysqli_stmt_bind_param($uviews_stmt, 'i',  $_GET["id"]);
+    $conect-> stmt_execute_close($uviews_stmt);
 }
-$date= date("Y-m-d");
-mysqli_query($link, "UPDATE `message-list1` SET `views`=`views`+1 WHERE `id` = '{$_GET["id"]}'");
-$mesage = mysqli_query($link, "SELECT `topic`, `user`, `date`, `message`,`views` FROM `message-list1` WHERE `id` = '{$_GET["id"]}'");
-
-if (isset($_POST["message1"]) && isset($_POST["e-mail1"]) && $link) {
-$comments = mysqli_query($link, "INSERT INTO `comments` (`message-comments`, `email-comments`, `id`, `date-comments` ) VALUES ( '{$_POST["message1"]}', '{$_POST["e-mail1"]}','{$_GET["id"]}', '{$date}')");
-    unset($_POST);
+if (isset($_GET["redirect"]) || !isset($_POST["topic_message"]) && !isset($_POST["topic_email"])) {
+  /*  mysqli_query($link, "UPDATE `topics` SET `views`=`views`+1 WHERE `id` = '{$_GET["id"]}'");*/
+    $views_stmt = mysqli_prepare($link, "UPDATE `topics` SET `uviews`=`uviews`+1 WHERE `id` =?");
+    mysqli_stmt_bind_param($views_stmt, 'i',  $_GET["id"]);
+    $conect-> stmt_execute_close($views_stmt);
 }
-
-
-$display_comments = mysqli_query($link, "SELECT `date-comments`,`email-comments`,  `message-comments`  FROM `comments` WHERE `id` = '{$_GET["id"]}'");
-
-$rows_comments = mysqli_num_rows($display_comments);
-
+$topic = mysqli_query($link, "SELECT `topic`, `user`, `date`, `message`,`views`,`uviews` FROM `topics` WHERE `id` = '{$_GET["id"]}'");
+if (isset($_POST["topic_message"]) && isset($_POST["topic_email"])) {
+    $comments_stmt = mysqli_prepare($link, "INSERT INTO `comments` (`email_comments`, `message_comments`, `topics_id`, `date_comments` ) VALUES (?, ?, ?, ?)");
+    mysqli_stmt_bind_param($comments_stmt, 'ssis', $_POST["topic_email"], $_POST["topic_message"], $_GET["id"], $date);
+    $conect-> stmt_execute_close($comments_stmt);
+    header("Location: /topic.php?id={$_GET['id']}");
+    /* header('Location: /topic.php?id=' . $_GET['id']);*/
+}
+$display_comments = mysqli_query($link, "SELECT `date_comments`,`email_comments`,  `message_comments`  FROM `comments` WHERE `topics_id` = '{$_GET["id"]}'");
+$comments = mysqli_num_rows($display_comments);
 ?>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="style.css"/>
+</head>
 
-    <html>
-    <head>
-        <meta charset="UTF-8"/>
-    </head>
+<body>
+<table>
+    <tr>
+        <th>Заголовок</th>
+        <th>Пользователь</th>
+        <th>Дата</th>
+        <th>Сообщение</th>
+        <th>Просмотры</th>
+        <th>Уникальные просмотры</th>
+    </tr>
+    <? $row = mysqli_fetch_row($topic); ?>
+    <tr>
+        <?php for ($j = 0; $j < 6; ++$j): ?>
+            <td><?= $row[$j] ?></td>
+        <?php endfor; ?>
+    </tr>
+</table>
 
-    <body>
-    <table>
-        <tr>
-            <th>Заголовок</th>
-            <th>User</th>
-            <th>Date</th>
-            <th>message</th>
-            <th>Views</th>
-        </tr>
+<form method='POST' class='form'>
 
-            <?
-            $row = mysqli_fetch_row($mesage);?>
-            <tr>
-                <?php for ($j = 0; $j < 5; ++$j): ?>
-                    <td><?=$row[$j]?></td>
-                <?php endfor;?>
-            </tr>
-
-    </table>
-    <form method='POST' location.href='new-post.php' class='form' >
-
-        <label for="e-mail_theme">Электронная почта:</label>
+    <label for="e-mail_topic">Электронная почта:</label>
     <div class="form_validate">
-        <input type='email' name="e-mail1" id='e-mail_theme'  placeholder="E-Mail"  />
+        <input type='email' name="topic_email" id='e-mail_topic' placeholder="E-Mail" required='true'/>
     </div>
 
     <label for='form_message'>Текст сообщения: </label>
     <div class="form_validate">
-        <textarea type='text' id='form_message' maxlength='1024' name='message1' rows='20' required='true'></textarea>
+        <textarea type='text' id='form_message' maxlength='1024' name='topic_message' rows='20'
+                  required='true'></textarea>
     </div>
-        <button type="submit" >Отправить</button>
-    </form>
+    <button type="submit">Отправить</button>
+</form>
 
-    <table>
+<table>
+    <tr>
+        <th>Дата</th>
+        <th>Email</th>
+        <th>Сообщение</th>
+    </tr>
+    <?php for ($i = $comments; $i != 0; --$i):
+        $row = mysqli_fetch_row($display_comments); ?>
         <tr>
-            <th>Data</th>
-            <th>email</th>
-            <th>message</th>
-
-
-
+            <td><?= $row[0] ?></td>
+            <td><?= $row[1] ?></td>
+            <td><?= $row[2] ?></td>
         </tr>
-
-        <?php for ($i = $rows_comments; $i != 0; --$i):
-            $row = mysqli_fetch_row($display_comments);?>
-            <tr>
-
-                <td><?=$row[0]?></td>
-                <td><?=$row[1]?></td>
-                <td><?=$row[2]?></td>
-
-                <?php  ?>
-            </tr>
-
-        <?php endfor; ?>
-    </table>
-    </html>
-
+    <?php endfor; ?>
+</table>
+</html>
 <?php
 mysqli_close($link);
 ?>
-
-
-
