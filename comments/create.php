@@ -1,14 +1,8 @@
-<?php
 
-
-if (isset($_POST["topic_message"]) && isset($_POST["topic_email"])&& isset($_POST["topic_user"])){
-    topic($_POST["topic_email"], $_POST["topic_message"], $_POST["topic_user"], $_GET["id"], $date);
-}
-?>
-<form method='POST' class='form'>
+<form method='POST' class='form' action='../comments/create_comments.php?id=<?= $_GET['id'] ?>'>
     <label for="topic_user">Имя  прользователя:</label>
     <div class="form_validate">
-        <input type="text" name='user' placeholder='Имя*' id='topic_user' maxlength='255' required='true'/>
+        <input type="text" name='topic_user' placeholder='Имя*' id='topic_user' maxlength='255' required='true'/>
     </div>
     <label for="e-mail_topic">Электронная почта:</label>
     <div class="form_validate">

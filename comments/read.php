@@ -1,5 +1,5 @@
 <?php
-$display_comments = mysqli_query($link, "SELECT `date_comments`,`email_comments`,  `message_comments`  `id` FROM `comments` WHERE `topics_id` = '{$_GET["id"]}'");
+$display_comments = mysqli_query($link, "SELECT `date_comments`,`email_comments`,  `message_comments`,  `id` FROM `comments` WHERE `topics_id` = '{$_GET["id"]}'");
 $comments = mysqli_num_rows($display_comments);
 ?>
 
@@ -8,6 +8,7 @@ $comments = mysqli_num_rows($display_comments);
         <th>Дата</th>
         <th>Email</th>
         <th>Сообщение</th>
+        <th></th>
     </tr>
     <?php for ($i = $comments; $i != 0; --$i):
         $row = mysqli_fetch_row($display_comments); ?>
@@ -15,7 +16,8 @@ $comments = mysqli_num_rows($display_comments);
             <td><?= $row[0] ?></td>
             <td><?= $row[1] ?></td>
             <td><?= $row[2] ?></td>
-            <a href="update.php"?id=<?= ($row[3]) ?>>Изменить </a>
+
+            <td><a href="../comments/update.php?id=<?= ($row[3]) ?>">Изменить </a></td>
         </tr>
 
     <?php endfor; ?>

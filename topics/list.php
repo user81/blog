@@ -29,7 +29,7 @@ $rows = mysqli_num_rows($post);
             </tr>
         <?php endfor; ?>
     </table>
-    <input type="button" value="Создать сообщение" onClick='location.href="new-post.php"'>
+    <input type="button" value="Создать сообщение" onClick='location.href="../topics/create.php"'>
     </html>
 <?php
 mysqli_close($link);
