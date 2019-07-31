@@ -36,7 +36,7 @@
 
 .form_validate :valid:not(:placeholder-shown) {
     border-color: green;
-    background-image: url("galochka.png");
+    background-image: url("../images/galochka.png");
     background-size: 25px;
     background-position: right 9px center;
     background-repeat: no-repeat;
@@ -46,7 +46,7 @@
 
 .form_validate :invalid:not(:placeholder-shown) {
     border-color: red;
-    background-image: url("sign-error-icon.png");
+    background-image: url("../images/sign-error-icon.png");
     background-size: 25px;
     background-position:right 9px center;
     background-repeat: no-repeat;
